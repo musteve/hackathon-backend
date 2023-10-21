@@ -18,7 +18,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*") //後で修正
 
 	bytes, err := json.Marshal(responseMessage{
-		Message: "Hello, World!!",
+		Message: "Hello, World!",
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
