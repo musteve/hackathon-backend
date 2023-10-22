@@ -15,10 +15,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*") //後で修正
+	w.Header().Set("Access-Control-Allow-Origin", "https://hackathon-frontend-o35b.vercel.app")
 
 	bytes, err := json.Marshal(responseMessage{
-		Message: "Hello, World!!",
+		Message: "Hello, World!",
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
