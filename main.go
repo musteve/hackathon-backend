@@ -4,11 +4,15 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/oklog/ulid"
 )
 
 
@@ -72,6 +76,57 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func addUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+
+	length := r.ContentLength
+	bytes := make([]byte, length)
+	if _, err := r.Body.Read(bytes); err != nil && err != io.EOF {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	body := new(user)
+	if err := json.Unmarshal(bytes, body); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	entropy := rand.New(rand.NewSource(time.Now().UnixNano()))
+	ms := ulid.Timestamp(time.Now())
+	newId, err := ulid.New(ms, entropy)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	_, err = tx.Exec(
+		"insert into user (id, name, age) values (?, ?, ?)",
+		newId.String(),
+		body.Name,
+		body.Age,
+	)
+
+	if err != nil {
+		tx.Rollback()
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if err := tx.Commit(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
 
 type responseMessage struct {
 	Message string `json:"message"`
@@ -98,5 +153,6 @@ func handlerHelloWorld(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/hello", handlerHelloWorld)
 	http.HandleFunc("/getusers", getUsers)
+	http.HandleFunc("/adduser", addUser)
 	http.ListenAndServe(":8080", nil)
 }
