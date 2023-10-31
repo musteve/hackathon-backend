@@ -48,7 +48,9 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+	// w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 
 	rows, err := db.Query("select * from user")
 	if err != nil {
@@ -82,7 +84,9 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+	// w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 
 	length := r.ContentLength
 	bytes := make([]byte, length)
@@ -139,6 +143,7 @@ func handlerHelloWorld(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	bytes, err := json.Marshal(responseMessage{
 		Message: "Hello, World!",
