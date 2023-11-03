@@ -211,7 +211,7 @@ func handlerHelloWorld(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+	// w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	bytes, err := json.Marshal(responseMessage{
@@ -229,5 +229,6 @@ func main() {
 	http.HandleFunc("/getusers", getUsers)
 	http.HandleFunc("/adduser", addUser)
 	http.HandleFunc("/deleteuser", deleteUser)
+	http.HandleFunc("/updateuser", updateUser)
 	http.ListenAndServe(":8080", nil)
 }
