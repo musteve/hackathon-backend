@@ -165,6 +165,41 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func updateUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	// w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CITE_VERCEL"))
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	length := r.ContentLength
+	bytes := make([]byte, length)
+	if _, err := r.Body.Read(bytes); err != nil && err != io.EOF {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	body := new(user)
+	if err := json.Unmarshal(bytes, body); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, err := db.Exec(
+		"update user set name = ? , age = ? where id = ?",
+		body.Name,
+		body.Age,
+		body.Id,
+	)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+}
+
 
 type responseMessage struct {
 	Message string `json:"message"`
