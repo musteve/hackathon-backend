@@ -15,8 +15,13 @@ import (
 	"github.com/oklog/ulid"
 )
 
+type Server struct {
+	db *sql.DB
+}
 
 var db *sql.DB
+
+var ser Server
 
 func init() {
 	mysqlUser := os.Getenv("MYSQL_USER")
@@ -33,6 +38,9 @@ func init() {
 		log.Fatalf("fail: _db.Ping, err")
 	}
 	db = _db
+	ser = Server{
+		db: _db,
+	}
 }
 
 
@@ -42,7 +50,7 @@ type user struct {
 	Age int `json:"age"`
 }
 
-func getUsers(w http.ResponseWriter, r *http.Request) {
+func (ser Server) getUsers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -52,7 +60,7 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 
-	rows, err := db.Query("select * from user")
+	rows, err := ser.db.Query("select * from user")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -226,7 +234,7 @@ func handlerHelloWorld(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/hello", handlerHelloWorld)
-	http.HandleFunc("/getusers", getUsers)
+	http.HandleFunc("/getusers", ser.getUsers)
 	http.HandleFunc("/adduser", addUser)
 	http.HandleFunc("/deleteuser", deleteUser)
 	http.HandleFunc("/updateuser", updateUser)
