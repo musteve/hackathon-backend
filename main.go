@@ -19,8 +19,6 @@ type Server struct {
 	db *sql.DB
 }
 
-var db *sql.DB
-
 var ser Server
 
 func init() {
@@ -37,7 +35,6 @@ func init() {
 	if err := _db.Ping(); err != nil {
 		log.Fatalf("fail: _db.Ping, err")
 	}
-	db = _db
 	ser = Server{
 		db: _db,
 	}
@@ -86,7 +83,7 @@ func (ser Server) getUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func addUser(w http.ResponseWriter, r *http.Request) {
+func (ser Server) addUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -115,7 +112,7 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := db.Begin()
+	tx, err := ser.db.Begin()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -140,7 +137,7 @@ func addUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteUser(w http.ResponseWriter, r *http.Request) {
+func (ser Server) deleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -161,7 +158,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := db.Exec(
+	_, err := ser.db.Exec(
 		"delete from user where id = ?",
 		body.Id,
 	)
@@ -173,7 +170,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func updateUser(w http.ResponseWriter, r *http.Request) {
+func (ser Server) updateUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -194,7 +191,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := db.Exec(
+	_, err := ser.db.Exec(
 		"update user set name = ? , age = ? where id = ?",
 		body.Name,
 		body.Age,
@@ -235,8 +232,8 @@ func handlerHelloWorld(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/hello", handlerHelloWorld)
 	http.HandleFunc("/getusers", ser.getUsers)
-	http.HandleFunc("/adduser", addUser)
-	http.HandleFunc("/deleteuser", deleteUser)
-	http.HandleFunc("/updateuser", updateUser)
+	http.HandleFunc("/adduser", ser.addUser)
+	http.HandleFunc("/deleteuser", ser.deleteUser)
+	http.HandleFunc("/updateuser", ser.updateUser)
 	http.ListenAndServe(":8080", nil)
 }
