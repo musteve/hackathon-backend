@@ -13,5 +13,8 @@ func DemoHundler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	switch r.Method {
 	case http.MethodGet: dao.GetUsers(w, r, db)
+	case http.MethodPost: dao.PostUser(w, r, db)
+	case http.MethodDelete: dao.DeleteUser(w, r, db)
+	case http.MethodPut: dao.PutUser(w, r, db)
 	}
 }
