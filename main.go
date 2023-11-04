@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"main/hundler"
 	"math/rand"
 	"net/http"
 	"os"
@@ -15,11 +16,7 @@ import (
 	"github.com/oklog/ulid"
 )
 
-type Server struct {
-	db *sql.DB
-}
-
-var ser Server
+var db *sql.DB
 
 func init() {
 	mysqlUser := os.Getenv("MYSQL_USER")
@@ -35,9 +32,12 @@ func init() {
 	if err := _db.Ping(); err != nil {
 		log.Fatalf("fail: _db.Ping, err")
 	}
-	ser = Server{
-		db: _db,
-	}
+	
+	db = _db
+}
+
+func demoHundler(w http.ResponseWriter, r *http.Request) {
+	hundler.DemoHundler(w, r, db)
 }
 
 
@@ -47,7 +47,7 @@ type user struct {
 	Age int `json:"age"`
 }
 
-func (ser Server) getUsers(w http.ResponseWriter, r *http.Request) {
+func getUsers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -57,7 +57,7 @@ func (ser Server) getUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 
-	rows, err := ser.db.Query("select * from user")
+	rows, err := db.Query("select * from user")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -83,7 +83,7 @@ func (ser Server) getUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (ser Server) addUser(w http.ResponseWriter, r *http.Request) {
+func addUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -112,7 +112,7 @@ func (ser Server) addUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tx, err := ser.db.Begin()
+	tx, err := db.Begin()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -137,7 +137,7 @@ func (ser Server) addUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (ser Server) deleteUser(w http.ResponseWriter, r *http.Request) {
+func deleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -158,7 +158,7 @@ func (ser Server) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := ser.db.Exec(
+	_, err := db.Exec(
 		"delete from user where id = ?",
 		body.Id,
 	)
@@ -170,7 +170,7 @@ func (ser Server) deleteUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (ser Server) updateUser(w http.ResponseWriter, r *http.Request) {
+func updateUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -191,7 +191,7 @@ func (ser Server) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := ser.db.Exec(
+	_, err := db.Exec(
 		"update user set name = ? , age = ? where id = ?",
 		body.Name,
 		body.Age,
@@ -231,9 +231,10 @@ func handlerHelloWorld(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/hello", handlerHelloWorld)
-	http.HandleFunc("/getusers", ser.getUsers)
-	http.HandleFunc("/adduser", ser.addUser)
-	http.HandleFunc("/deleteuser", ser.deleteUser)
-	http.HandleFunc("/updateuser", ser.updateUser)
+	http.HandleFunc("/getusers", getUsers)
+	http.HandleFunc("/adduser", addUser)
+	http.HandleFunc("/deleteuser", deleteUser)
+	http.HandleFunc("/updateuser", updateUser)
+	http.HandleFunc("/demo", demoHundler)
 	http.ListenAndServe(":8080", nil)
 }
