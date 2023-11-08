@@ -18,7 +18,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	users := make([]model.User, 0)
 	for rows.Next() {
 		var u model.User
-		if err := rows.Scan(&u.Id, &u.Name, &u.Age); err != nil {
+		if err := rows.Scan(&u.Id, &u.Name, &u.Age, &u.LastUpdate); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
