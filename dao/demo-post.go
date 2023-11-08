@@ -39,7 +39,7 @@ func PostUser(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	_, err = tx.Exec(
-		"insert into user (id, name, age, last-update) values (?, ?, ?, ?)",
+		"insert into user (id, name, age, last_update) values (?, ?, ?, ?)",
 		newId.String(),
 		body.Name,
 		body.Age,

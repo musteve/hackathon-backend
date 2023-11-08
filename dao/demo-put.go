@@ -34,7 +34,7 @@ func PutUser(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	_, err = db.Exec(
-		"update user set name = ? , age = ? last-update = ? where id = ?",
+		"update user set name = ? , age = ? last_update = ? where id = ?",
 		body.Name,
 		body.Age,
 		newId.String(),
