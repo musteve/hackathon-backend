@@ -39,8 +39,6 @@ func InsertBook(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	t := time.Now()
-	const layout = "2022-12-25"
-
 
 	_, err = tx.Exec(
 		"insert into book (id, title, author, issue_date, publisher, description, tag, last_update, last_update_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -52,7 +50,7 @@ func InsertBook(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		body.Description,
 		body.Tag,
 		newId.String(),
-		t.Format(layout),
+		t.String()[0:10],
 	)
 
 	if err != nil {

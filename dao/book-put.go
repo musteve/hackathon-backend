@@ -34,7 +34,6 @@ func PutBook(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	t := time.Now()
-	const layout = "2022-12-25"
 
 	_, err = db.Exec(
 		"update book set title = ? , author = ?, issue_date = ?, publisher = ?, description = ?, tag = ?, last_update = ?, last_update_date = ? where id = ?",
@@ -45,7 +44,7 @@ func PutBook(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		body.Description,
 		body.Tag,
 		newId.String(),
-		t.Format(layout),
+		t.String()[0:10],
 		body.Id,
 	)
 
