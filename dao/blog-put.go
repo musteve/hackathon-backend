@@ -36,7 +36,7 @@ func PutBlog(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	t := time.Now()
 
 	_, err = db.Exec(
-		"update book set title = ? , author = ?, url = ?, description = ?, tag = ?, last_update = ?, last_update_date = ? where id = ?",
+		"update blog set title = ? , author = ?, url = ?, description = ?, tag = ?, last_update = ?, last_update_date = ? where id = ?",
 		body.Title,
 		body.Author,
 		body.Url,
