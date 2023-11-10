@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"main/hundler"
+	"main/handler"
 	"net/http"
 	"os"
 
@@ -33,18 +33,28 @@ func init() {
 }
 
 func main() {
+	http.HandleFunc("/book", bookHandler)
+	http.HandleFunc("/blog", blogHandler)
+
 	http.HandleFunc("/hello", handlerHelloWorld)
 	http.HandleFunc("/demo", demoHundler)
-	http.HandleFunc("/book", bookHundler)
 	http.ListenAndServe(":8080", nil)
 }
 
-func bookHundler(w http.ResponseWriter, r *http.Request) {
-	hundler.BookHundler(w, r, db)
+func bookHandler(w http.ResponseWriter, r *http.Request) {
+	handler.BookHandler(w, r, db)
 }
 
+func blogHandler(w http.ResponseWriter, r *http.Request) {
+	handler.BlogHandler(w, r, db)
+}
+
+
+
+
+
 func demoHundler(w http.ResponseWriter, r *http.Request) {
-	hundler.DemoHundler(w, r, db)
+	handler.DemoHandler(w, r, db)
 }
 
 type responseMessage struct {
