@@ -36,6 +36,7 @@ func main() {
 	http.HandleFunc("/book", bookHandler)
 	http.HandleFunc("/blog", blogHandler)
 	http.HandleFunc("/vedeo", vedeoHandler)
+	http.HandleFunc("/curriculum", vedeoHandler)
 
 	http.HandleFunc("/hello", handlerHelloWorld)
 	http.HandleFunc("/demo", demoHundler)
@@ -52,6 +53,10 @@ func blogHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func vedeoHandler(w http.ResponseWriter, r *http.Request) {
+	handler.VedeoHandler(w, r, db)
+}
+
+func curriculumHandler(w http.ResponseWriter, r *http.Request) {
 	handler.VedeoHandler(w, r, db)
 }
 
