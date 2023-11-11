@@ -35,11 +35,13 @@ func init() {
 func main() {
 	http.HandleFunc("/book", bookHandler)
 	http.HandleFunc("/blog", blogHandler)
+	http.HandleFunc("/vedeo", vedeoHandler)
 
 	http.HandleFunc("/hello", handlerHelloWorld)
 	http.HandleFunc("/demo", demoHundler)
 	http.ListenAndServe(":8080", nil)
 }
+
 
 func bookHandler(w http.ResponseWriter, r *http.Request) {
 	handler.BookHandler(w, r, db)
@@ -49,7 +51,9 @@ func blogHandler(w http.ResponseWriter, r *http.Request) {
 	handler.BlogHandler(w, r, db)
 }
 
-
+func vedeoHandler(w http.ResponseWriter, r *http.Request) {
+	handler.VedeoHandler(w, r, db)
+}
 
 
 
