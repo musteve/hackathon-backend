@@ -57,7 +57,7 @@ func vedeoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func curriculumHandler(w http.ResponseWriter, r *http.Request) {
-	handler.VedeoHandler(w, r, db)
+	handler.CurriculumHandler(w, r, db)
 }
 
 
