@@ -36,7 +36,7 @@ func PutCurriculum(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	t := time.Now()
 
 	_, err = db.Exec(
-		"update curriculum set title = ? , author = ?, url = ?, description = ?, tag = ?, last_update = ?, last_update_date = ? where id = ?",
+		"update curriculum set title = ? , chapter = ?, url = ?, description = ?, tag = ?, last_update = ?, last_update_date = ? where id = ?",
 		body.Title,
 		body.Chapter,
 		body.Url,

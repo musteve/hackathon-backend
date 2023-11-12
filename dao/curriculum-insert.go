@@ -41,7 +41,7 @@ func InsertCurriculum(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	t := time.Now()
 
 	_, err = tx.Exec(
-		"insert into curriculum (id, title, author, url, description, tag, last_update, last_update_date) values (?, ?, ?, ?, ?, ?, ?, ?)",
+		"insert into curriculum (id, title, chapter, url, description, tag, last_update, last_update_date) values (?, ?, ?, ?, ?, ?, ?, ?)",
 		newId.String(),
 		body.Title,
 		body.Chapter,
