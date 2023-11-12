@@ -36,7 +36,7 @@ func main() {
 	http.HandleFunc("/book", bookHandler)
 	http.HandleFunc("/blog", blogHandler)
 	http.HandleFunc("/vedeo", vedeoHandler)
-	http.HandleFunc("/curriculum", vedeoHandler)
+	http.HandleFunc("/curriculum", curriculumHandler)
 
 	http.HandleFunc("/hello", handlerHelloWorld)
 	http.HandleFunc("/demo", demoHundler)
